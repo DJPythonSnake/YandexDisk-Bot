@@ -87,7 +87,6 @@ dp.register_message_handler(send_link, commands="send_link")
 dp.register_message_handler(files_uploaded)
 dp.register_message_handler(accepted, text="Принимаю")
 
-WdaT|c~u3XwW
 
 '''
 
