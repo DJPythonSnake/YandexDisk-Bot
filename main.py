@@ -13,13 +13,19 @@ from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 
-bot = Bot(token="")
+bot = Bot(token="5901954678:AAGqFJkYI7qH4pSRAj8hPD_tUUKdGWyP_ys")
 dp = Dispatcher(bot)
 logging.basicConfig(level=logging.INFO)
 
 
 # База данных, где мы будем хранить ссылки на яндекс диск и имена пользователей
 users = {'алексей', 'quik'}
+
+#инлайн-кнопки
+inline_btn = InlineKeyboardButton(text="Принять✅", callback_data='accept')
+inline_btn1 = InlineKeyboardButton(text="Отменить❌ ", callback_data='deny')
+
+inline_markup = InlineKeyboardMarkup().add(inline_btn).add(inline_btn1)
 
 #кейбордные конпки(которые под строкой для ввода)
 button_start = KeyboardButton('Начать')
@@ -30,7 +36,9 @@ greet_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(button_hi)
 
 # Клавиатура, которая будет отображаться при входе в бота
 @dp.message_handler(commands=['start', 'help'])
-async def start(msg: types.Message):
+async def start(msg: types.Message, state: FSMContext):
+    global gost_user_id
+    gost_user_id = msg.from_user.id
     await msg.answer("Добро пожаловать! Можем начинать", reply_markup=greet_kb1)
     
 @dp.message_handler(Text(equals='Начать'))
@@ -52,8 +60,18 @@ async def take_a_name(msg: types.Message):
 @dp.message_handler(Text(equals='Готово✅'))
 async def register(msg: types.Message):
     await bot.send_message(msg.chat.id, "Ваши файлы приняты. Ожидайте ответа...")
-    await bot.send_message(chat_id="614250783", text="Файлы были отгружены на Яндекс Диск")
+    await bot.send_message(chat_id="614250783", text="Файлы были отгружены на Яндекс Диск", reply_markup=inline_markup)
     
+@dp.callback_query_handler(text="accept")
+async def with_puree(message: types.Message):
+    await bot.send_message(chat_id="614250783", text="Вы приняли файлы")
+    await bot.send_message(chat_id=gost_user_id, text="Ваши файлы приняты!")
+
+
+@dp.callback_query_handler(text="deny")
+async def with_puree(message: types.Message):
+    await bot.send_message(chat_id="614250783", text="Вы отменили файлы")
+    await bot.send_message(chat_id=gost_user_id, text="Ваши файлы не приняты! Обратитесь к '@ytmanagers' за подробностями.")
 '''<Будущие наработки>
 
 # Функция, которая будет отправлять ссылку на яндекс диск
@@ -87,6 +105,7 @@ dp.register_message_handler(send_link, commands="send_link")
 dp.register_message_handler(files_uploaded)
 dp.register_message_handler(accepted, text="Принимаю")
 
+WdaT|c~u3XwW
 
 '''
 
